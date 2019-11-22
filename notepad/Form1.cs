@@ -12,9 +12,17 @@ namespace notepad
 {
     public partial class Form1 : Form
     {
+        private int numberOfNewPage = 2;
+        private Font font;
         public Form1()
         {
             InitializeComponent();
+            font = new Font("Consolas", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);       
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }
