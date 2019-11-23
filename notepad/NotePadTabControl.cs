@@ -13,6 +13,7 @@ namespace notepad
     public partial class NotePadTabControl : UserControl
     {
         private int numberOfPage = 1;
+        public bool WordWrap { get; private set; } = true;
         private new Font Font { get; set; }
 
         public NotePadTabControl()
@@ -29,6 +30,7 @@ namespace notepad
 
         public void AddNewTabPage(string tabPageName, RichTextBox richTextBox)
         {
+            richTextBox.ContextMenuStrip = richTextBoxContextMenuStrip;
             richTextBox.Dock = DockStyle.Fill;
             richTextBox.Font = Font;
             richTextBox.Location = new Point(3, 3);
@@ -60,6 +62,22 @@ namespace notepad
             {
                 RichTextBox richTextBox = (RichTextBox)sender;
                 richTextBox.Modified = true;
+            }
+        }
+
+        public void ReverseWordWrap()
+        {
+            WordWrap = !WordWrap;
+            foreach(TabPage tabPage in tabControl.TabPages)
+            {
+                foreach (Control control in tabPage.Controls)
+                {
+                    if (control is RichTextBox)
+                    {
+                        RichTextBox richTextBox = (RichTextBox)control;
+                        richTextBox.WordWrap = WordWrap;
+                    }
+                }
             }
         }
     }

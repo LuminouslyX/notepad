@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace notepad
@@ -43,6 +37,48 @@ namespace notepad
                 streamReader.Close();
                 fileSteam.Close();
                 notePadTabControl.AddNewTabPage(absolutePahtName, richTextBox);
+            }
+        }
+
+        private void WordWrapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (notePadTabControl.WordWrap == false)
+            {
+                wordWrapToolStripMenuItem.Text = "取消自动换行(&W)";
+            }
+            else
+            {
+                wordWrapToolStripMenuItem.Text = "自动换行(&W)";
+            }
+            notePadTabControl.ReverseWordWrap();
+        }
+
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TabPage tabPage = notePadTabControl.tabControl.SelectedTab;
+            RichTextBox richTextBox = (RichTextBox)tabPage.Controls[0];
+            string absolutePathName = tabPage.Text;
+            try
+            {
+                FileStream fileStream = new FileStream(absolutePathName, FileMode.Open);
+                fileStream.Close();
+                string fileType = absolutePathName.Substring(absolutePathName.LastIndexOf('.') + 1).ToLower();
+                if (fileType.Equals("rtf"))
+                {
+                    richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.RichText);
+                }
+                else if (fileType.Equals("uni"))
+                {
+                    richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.UnicodePlainText);
+                }
+                else
+                {
+                    richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.PlainText);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+
             }
         }
     }
