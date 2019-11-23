@@ -56,12 +56,9 @@
             this.替换RToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newTabPage1 = new System.Windows.Forms.TabPage();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.tabControl = new System.Windows.Forms.TabControl();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.notePadTabControl = new notepad.NotePadTabControl();
             this.notepadMenuStrip.SuspendLayout();
-            this.newTabPage1.SuspendLayout();
-            this.tabControl.SuspendLayout();
             this.SuspendLayout();
             // 
             // notepadMenuStrip
@@ -103,7 +100,7 @@
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.Size = new System.Drawing.Size(202, 26);
             this.newToolStripMenuItem.Text = "新建(&N)";
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.NewToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -113,6 +110,7 @@
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(202, 26);
             this.openToolStripMenuItem.Text = "打开(&O)";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // toolStripSeparator
             // 
@@ -280,56 +278,29 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(155, 26);
             this.aboutToolStripMenuItem.Text = "关于(&A)...";
             // 
-            // newTabPage1
+            // openFileDialog
             // 
-            this.newTabPage1.Controls.Add(this.richTextBox1);
-            this.newTabPage1.Location = new System.Drawing.Point(4, 28);
-            this.newTabPage1.Name = "newTabPage1";
-            this.newTabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.newTabPage1.Size = new System.Drawing.Size(1219, 676);
-            this.newTabPage1.TabIndex = 1;
-            this.newTabPage1.Text = "newFile1";
-            this.newTabPage1.UseVisualStyleBackColor = true;
+            this.openFileDialog.Filter = "text file|*.txt;*.html;*.docx;*.doc;*.rtf";
+            this.openFileDialog.Title = "打开文件";
             // 
-            // richTextBox1
+            // notePadTabControl
             // 
-            this.richTextBox1.AcceptsTab = true;
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox1.Font = new System.Drawing.Font("Consolas", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(3, 3);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(1213, 670);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
-            // 
-            // tabControl
-            // 
-            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tabControl.Controls.Add(this.newTabPage1);
-            this.tabControl.Location = new System.Drawing.Point(0, 30);
-            this.tabControl.Multiline = true;
-            this.tabControl.Name = "tabControl";
-            this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(1227, 708);
-            this.tabControl.TabIndex = 1;
+            this.notePadTabControl.Location = new System.Drawing.Point(0, 27);
+            this.notePadTabControl.Name = "notePadTabControl";
+            this.notePadTabControl.Size = new System.Drawing.Size(1227, 708);
+            this.notePadTabControl.TabIndex = 3;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1227, 739);
-            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.notePadTabControl);
             this.Controls.Add(this.notepadMenuStrip);
             this.Name = "Form1";
             this.Text = "Form1";
             this.notepadMenuStrip.ResumeLayout(false);
             this.notepadMenuStrip.PerformLayout();
-            this.newTabPage1.ResumeLayout(false);
-            this.tabControl.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -337,8 +308,6 @@
 
         #endregion
         private System.Windows.Forms.MenuStrip notepadMenuStrip;
-        private System.Windows.Forms.TabPage newTabPage1;
-        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -365,7 +334,8 @@
         private System.Windows.Forms.ToolStripMenuItem 查看与替换ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 查找下一个NToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 替换RToolStripMenuItem;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private NotePadTabControl notePadTabControl;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
     }
 }
 
