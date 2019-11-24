@@ -78,7 +78,43 @@ namespace notepad
             }
             catch (FileNotFoundException)
             {
+                SaveAsToolStripMenuItem_Click(sender, e);
+            }
+        }
 
+        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string absolutePathName = notePadTabControl.tabControl.SelectedTab.Text;
+            if (absolutePathName.LastIndexOf('.') != -1)
+            {
+                saveFileDialog.FileName = absolutePathName;
+            }
+            else
+            {
+                saveFileDialog.FileName = absolutePathName + ".rtf";        //默认为rtf文件
+            }
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                absolutePathName = saveFileDialog.FileName;
+                notePadTabControl.tabControl.SelectedTab.Text = absolutePathName;
+                string fileType = absolutePathName.Substring(absolutePathName.LastIndexOf('.') + 1);
+                FileStream fileStream = new FileStream(absolutePathName, FileMode.OpenOrCreate);
+                fileStream.Close();
+
+                RichTextBox richTextBox = (RichTextBox)notePadTabControl.tabControl.SelectedTab.Controls[0];
+                if (fileType.Equals("rtf"))
+                {
+                    richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.RichText);
+                }
+                else if (fileType.Equals("uni"))
+                {
+                    richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.UnicodePlainText);
+                }
+                else
+                {
+                    richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.PlainText);
+                }
             }
         }
     }
