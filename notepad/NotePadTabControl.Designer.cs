@@ -30,6 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.closeTabPageContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageTest = new System.Windows.Forms.TabPage();
             this.richTextBoxTest = new System.Windows.Forms.RichTextBox();
             this.richTextBoxContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -38,6 +40,7 @@
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
+            this.closeTabPageContextMenuStrip.SuspendLayout();
             this.tabPageTest.SuspendLayout();
             this.richTextBoxContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -47,6 +50,7 @@
             this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl.ContextMenuStrip = this.closeTabPageContextMenuStrip;
             this.tabControl.Controls.Add(this.tabPageTest);
             this.tabControl.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.tabControl.HotTrack = true;
@@ -56,6 +60,22 @@
             this.tabControl.Size = new System.Drawing.Size(1227, 708);
             this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl.TabIndex = 0;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.TabControl_SelectedIndexChanged);
+            // 
+            // closeTabPageContextMenuStrip
+            // 
+            this.closeTabPageContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.closeTabPageContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.closeToolStripMenuItem});
+            this.closeTabPageContextMenuStrip.Name = "closeTabPageContextMenuStrip";
+            this.closeTabPageContextMenuStrip.Size = new System.Drawing.Size(129, 28);
+            // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(128, 24);
+            this.closeToolStripMenuItem.Text = "关闭(&C)";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
             // 
             // tabPageTest
             // 
@@ -71,6 +91,7 @@
             // 
             // richTextBoxTest
             // 
+            this.richTextBoxTest.AcceptsTab = true;
             this.richTextBoxTest.ContextMenuStrip = this.richTextBoxContextMenuStrip;
             this.richTextBoxTest.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBoxTest.Font = new System.Drawing.Font("Consolas", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -124,6 +145,7 @@
             this.Name = "NotePadTabControl";
             this.Size = new System.Drawing.Size(1227, 708);
             this.tabControl.ResumeLayout(false);
+            this.closeTabPageContextMenuStrip.ResumeLayout(false);
             this.tabPageTest.ResumeLayout(false);
             this.richTextBoxContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -139,5 +161,7 @@
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         internal System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.ContextMenuStrip closeTabPageContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     }
 }

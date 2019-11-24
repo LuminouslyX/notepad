@@ -13,13 +13,15 @@ namespace notepad
     public partial class NotePadTabControl : UserControl
     {
         private int numberOfPage = 1;
-        public bool WordWrap { get; private set; } = true;
-        private new Font Font { get; set; }
+        internal bool WordWrap { get; private set; } = true;
+        internal new Font Font { get; private set; }
+        internal Color BackGroundColor { get; private set; }
 
         public NotePadTabControl()
         {
             InitializeComponent();
             Font = new Font("Consolas", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            BackGroundColor = richTextBoxTest.BackColor;
         }
 
         public void AddNewTabPage()
@@ -30,6 +32,7 @@ namespace notepad
 
         public void AddNewTabPage(string tabPageName, RichTextBox richTextBox)
         {
+            richTextBox.AcceptsTab = true;
             richTextBox.ContextMenuStrip = richTextBoxContextMenuStrip;
             richTextBox.Dock = DockStyle.Fill;
             richTextBox.Font = Font;
@@ -56,6 +59,27 @@ namespace notepad
             tabControl.SelectedTab = tabPage;
         }
 
+        public void SetFont(Font font)
+        {
+            Font = font;
+            foreach(TabPage tabPage in tabControl.TabPages)
+            {
+                RichTextBox richTextBox = (RichTextBox)tabPage.Controls[0];
+                richTextBox.Font = Font;
+            }
+        }
+
+        public void SetBackGroundColor(Color color)
+        {
+            BackGroundColor = color;
+            foreach (TabPage tabPage in tabControl.TabPages)
+            {
+                RichTextBox richTextBox = (RichTextBox)tabPage.Controls[0];
+                richTextBox.BackColor = BackGroundColor;
+            }
+        }
+
+
         private void SetUnsaved(object sender, EventArgs e)
         {
             if (sender is RichTextBox)
@@ -65,7 +89,7 @@ namespace notepad
             }
         }
 
-        public void ReverseWordWrap()
+        internal void ReverseWordWrap()
         {
             WordWrap = !WordWrap;
             foreach(TabPage tabPage in tabControl.TabPages)
@@ -79,6 +103,18 @@ namespace notepad
                     }
                 }
             }
+        }
+
+        private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControl.Controls.Remove(tabControl.SelectedTab);
+        }
+
+        private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            TabPage tabPage = tabControl.SelectedTab;
+            RichTextBox richTextBox = (RichTextBox)tabPage.Controls[0];
+            richTextBox.Focus();
         }
     }
 }

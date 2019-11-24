@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -7,6 +8,24 @@ namespace notepad
 {
     public partial class Form1 : Form
     {
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi)]
+
+        internal static extern IntPtr GetFocus();
+
+        ///获取 当前拥有焦点的控件
+        private Control GetFocusedControl()
+        {
+
+            Control focusedControl = null;
+            
+            IntPtr focusedHandle = GetFocus();
+            if (focusedHandle != IntPtr.Zero)
+            {
+                focusedControl = Control.FromChildHandle(focusedHandle);
+            }
+            return focusedControl;
+        }
+
         public Form1()
         {
             InitializeComponent(); 
@@ -75,6 +94,7 @@ namespace notepad
                 {
                     richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.PlainText);
                 }
+                richTextBox.Modified = false;
             }
             catch (FileNotFoundException)
             {
@@ -115,6 +135,121 @@ namespace notepad
                 {
                     richTextBox.SaveFile(absolutePathName, RichTextBoxStreamType.PlainText);
                 }
+                richTextBox.Modified = false;
+            }
+        }
+
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private RichTextBox GetSelectedRichTextBox()
+        {
+            TabPage tabPage = notePadTabControl.tabControl.SelectedTab;
+            if (tabPage == null)
+                return null;
+            RichTextBox richTextBox = (RichTextBox)tabPage.Controls[0];
+            return richTextBox;
+        }
+
+        private void FileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox = GetSelectedRichTextBox();
+            if (richTextBox == null)
+                return;
+            if (richTextBox.Modified == true)
+            {
+                saveToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                saveToolStripMenuItem.Enabled = false;
+            }
+        }
+
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox = GetSelectedRichTextBox();
+            string selectedText = richTextBox.SelectedRtf;
+            if (selectedText != string.Empty)
+            {
+                Clipboard.SetText(selectedText);
+            }
+        }
+
+        private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox = (RichTextBox)notePadTabControl.tabControl.SelectedTab.Controls[0];
+            richTextBox.Paste();
+        }
+
+        private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox = (RichTextBox)notePadTabControl.tabControl.SelectedTab.Controls[0];
+            richTextBox.SelectAll();
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox = (RichTextBox)notePadTabControl.tabControl.SelectedTab.Controls[0];
+            richTextBox.SelectedText = string.Empty;
+        }
+
+        private void CutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopyToolStripMenuItem_Click(sender, e);
+            DeleteToolStripMenuItem_Click(sender, e);
+        }
+
+        private void EditToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Clipboard.GetText() == string.Empty)
+            {
+                pasteToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                pasteToolStripMenuItem.Enabled = true;
+            }
+            if (GetSelectedRichTextBox().SelectedText == string.Empty)
+            {
+                cutToolStripMenuItem.Enabled = false;
+                copyToolStripMenuItem.Enabled = false;
+                deleteToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                cutToolStripMenuItem.Enabled = true;
+                copyToolStripMenuItem.Enabled = true;
+                deleteToolStripMenuItem.Enabled = true;
+            }
+            Control control = GetFocusedControl();
+            if (control == null || !(control is RichTextBox))
+            {
+                selectAllToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                selectAllToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void FontToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fontDialog.Font = notePadTabControl.Font;
+            if (fontDialog.ShowDialog() == DialogResult.OK)
+            {
+                notePadTabControl.SetFont(fontDialog.Font);
+            }
+        }
+
+        private void ColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorDialog.Color = notePadTabControl.BackGroundColor;
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                notePadTabControl.SetBackGroundColor(colorDialog.Color);
             }
         }
     }
