@@ -13,13 +13,16 @@ namespace notepad
     public partial class NotePadTabControl : UserControl
     {
         private int numberOfPage = 1;
-        internal bool WordWrap { get; private set; } = true;
+        internal bool WordWrap { get; private set; }
         internal new Font Font { get; private set; }
         internal Color BackGroundColor { get; private set; }
 
         public NotePadTabControl()
         {
             InitializeComponent();
+            richTextBoxTest.Focus();
+            richTextBoxTest.SelectionStart = richTextBoxTest.Text.Length;
+            WordWrap = true;
             Font = new Font("Consolas", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             BackGroundColor = richTextBoxTest.BackColor;
         }
@@ -41,6 +44,7 @@ namespace notepad
             richTextBox.Size = new Size(1213, 673);
             richTextBox.TabIndex = 0;
             richTextBox.TextChanged += new EventHandler(SetUnsaved);
+            richTextBox.WordWrap = WordWrap;
 
             TabPage tabPage = new TabPage();
             tabPage.SuspendLayout();
@@ -110,11 +114,55 @@ namespace notepad
             tabControl.Controls.Remove(tabControl.SelectedTab);
         }
 
-        private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private void TabControl_Click(object sender, EventArgs e)
+        {
+            ((RichTextBox)tabControl.SelectedTab.Controls[0]).Focus();
+        }
+
+        internal void CutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopyToolStripMenuItem_Click(sender, e);
+            DeleteToolStripMenuItem_Click(sender, e);
+        }
+
+        internal void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox = GetSelectedRichTextBox();
+            if (richTextBox == null)
+                return;
+            string selectedText = richTextBox.SelectedText;
+            if (selectedText != string.Empty)
+            {
+                Clipboard.SetText(selectedText);
+            }
+        }
+
+        internal void PasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetSelectedRichTextBox()?.Paste();
+        }
+
+        internal void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ((RichTextBox)tabControl.SelectedTab.Controls[0]).SelectedText = string.Empty;
+        }
+
+        internal void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetSelectedRichTextBox()?.SelectAll();
+        }
+
+        internal RichTextBox GetSelectedRichTextBox()
         {
             TabPage tabPage = tabControl.SelectedTab;
-            RichTextBox richTextBox = (RichTextBox)tabPage.Controls[0];
-            richTextBox.Focus();
+            if (tabPage == null)
+                return null;
+            return (RichTextBox)tabPage.Controls[0];
+        }
+
+        private void RichTextBoxContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            
         }
     }
 }

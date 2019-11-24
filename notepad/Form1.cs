@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -8,34 +7,49 @@ namespace notepad
 {
     public partial class Form1 : Form
     {
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi)]
-
-        internal static extern IntPtr GetFocus();
-
-        ///获取 当前拥有焦点的控件
-        private Control GetFocusedControl()
-        {
-
-            Control focusedControl = null;
-            
-            IntPtr focusedHandle = GetFocus();
-            if (focusedHandle != IntPtr.Zero)
-            {
-                focusedControl = Control.FromChildHandle(focusedHandle);
-            }
-            return focusedControl;
-        }
-
         public Form1()
         {
-            InitializeComponent(); 
+            InitializeComponent();
+            fileToolStripMenuItem.PerformClick();
+            editToolStripMenuItem.PerformClick();
         }
 
+
+        /// <summary>
+        /// 打开工具栏的文件项的时候产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void FileToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
+            if (richTextBox != null && richTextBox.Modified == true)
+            {
+                saveToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                saveToolStripMenuItem.Enabled = false;
+            }
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下文件项里的新建项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
         private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             notePadTabControl.AddNewTabPage();
         }
 
+
+        /// <summary>
+        /// 点击工具栏下文件项里的打开项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -59,19 +73,12 @@ namespace notepad
             }
         }
 
-        private void WordWrapToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (notePadTabControl.WordWrap == false)
-            {
-                wordWrapToolStripMenuItem.Text = "取消自动换行(&W)";
-            }
-            else
-            {
-                wordWrapToolStripMenuItem.Text = "自动换行(&W)";
-            }
-            notePadTabControl.ReverseWordWrap();
-        }
 
+        /// <summary>
+        /// 点击工具栏下文件项里的保存项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TabPage tabPage = notePadTabControl.tabControl.SelectedTab;
@@ -102,6 +109,12 @@ namespace notepad
             }
         }
 
+
+        /// <summary>
+        /// 点击工具栏下文件项里的另存为项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string absolutePathName = notePadTabControl.tabControl.SelectedTab.Text;
@@ -139,72 +152,27 @@ namespace notepad
             }
         }
 
+
+        /// <summary>
+        /// 点击工具栏下文件项里的退出项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private RichTextBox GetSelectedRichTextBox()
-        {
-            TabPage tabPage = notePadTabControl.tabControl.SelectedTab;
-            if (tabPage == null)
-                return null;
-            RichTextBox richTextBox = (RichTextBox)tabPage.Controls[0];
-            return richTextBox;
-        }
 
-        private void FileToolStripMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 打开工具栏的编辑项的时候产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void EditToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            RichTextBox richTextBox = GetSelectedRichTextBox();
-            if (richTextBox == null)
-                return;
-            if (richTextBox.Modified == true)
-            {
-                saveToolStripMenuItem.Enabled = true;
-            }
-            else
-            {
-                saveToolStripMenuItem.Enabled = false;
-            }
-        }
-
-        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RichTextBox richTextBox = GetSelectedRichTextBox();
-            string selectedText = richTextBox.SelectedRtf;
-            if (selectedText != string.Empty)
-            {
-                Clipboard.SetText(selectedText);
-            }
-        }
-
-        private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RichTextBox richTextBox = (RichTextBox)notePadTabControl.tabControl.SelectedTab.Controls[0];
-            richTextBox.Paste();
-        }
-
-        private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RichTextBox richTextBox = (RichTextBox)notePadTabControl.tabControl.SelectedTab.Controls[0];
-            richTextBox.SelectAll();
-        }
-
-        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RichTextBox richTextBox = (RichTextBox)notePadTabControl.tabControl.SelectedTab.Controls[0];
-            richTextBox.SelectedText = string.Empty;
-        }
-
-        private void CutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CopyToolStripMenuItem_Click(sender, e);
-            DeleteToolStripMenuItem_Click(sender, e);
-        }
-
-        private void EditToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Clipboard.GetText() == string.Empty)
+            RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
+            if (richTextBox == null || richTextBox.Focused == false || Clipboard.GetText() == string.Empty)
             {
                 pasteToolStripMenuItem.Enabled = false;
             }
@@ -212,7 +180,7 @@ namespace notepad
             {
                 pasteToolStripMenuItem.Enabled = true;
             }
-            if (GetSelectedRichTextBox().SelectedText == string.Empty)
+            if (richTextBox == null || richTextBox.SelectedText == string.Empty)
             {
                 cutToolStripMenuItem.Enabled = false;
                 copyToolStripMenuItem.Enabled = false;
@@ -224,8 +192,7 @@ namespace notepad
                 copyToolStripMenuItem.Enabled = true;
                 deleteToolStripMenuItem.Enabled = true;
             }
-            Control control = GetFocusedControl();
-            if (control == null || !(control is RichTextBox))
+            if (richTextBox == null || richTextBox.Focused == false)
             {
                 selectAllToolStripMenuItem.Enabled = false;
             }
@@ -235,6 +202,85 @@ namespace notepad
             }
         }
 
+        /// <summary>
+        /// 点击工具栏下编辑项里的剪切项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void CutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notePadTabControl.CutToolStripMenuItem_Click(sender, e);
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下编辑项里的复制项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notePadTabControl.CopyToolStripMenuItem_Click(sender, e);
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下编辑项里的粘贴项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notePadTabControl.PasteToolStripMenuItem_Click(sender, e);
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下编辑项里的删除项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notePadTabControl.DeleteToolStripMenuItem_Click(sender, e);
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下编辑项里的全选项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notePadTabControl.SelectAllToolStripMenuItem_Click(sender, e);
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下格式项里的换行项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void WordWrapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (notePadTabControl.WordWrap == false)
+            {
+                wordWrapToolStripMenuItem.Text = "取消自动换行(&W)";
+            }
+            else
+            {
+                wordWrapToolStripMenuItem.Text = "自动换行(&W)";
+            }
+            notePadTabControl.ReverseWordWrap();
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下格式项里的字体项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
         private void FontToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fontDialog.Font = notePadTabControl.Font;
@@ -244,6 +290,12 @@ namespace notepad
             }
         }
 
+
+        /// <summary>
+        /// 点击工具栏下格式项里的颜色项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
         private void ColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorDialog.Color = notePadTabControl.BackGroundColor;

@@ -39,6 +39,7 @@
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.closeTabPageContextMenuStrip.SuspendLayout();
             this.tabPageTest.SuspendLayout();
@@ -60,7 +61,7 @@
             this.tabControl.Size = new System.Drawing.Size(1227, 708);
             this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl.TabIndex = 0;
-            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.TabControl_SelectedIndexChanged);
+            this.tabControl.Click += new System.EventHandler(this.TabControl_Click);
             // 
             // closeTabPageContextMenuStrip
             // 
@@ -109,33 +110,46 @@
             this.cutToolStripMenuItem,
             this.copyToolStripMenuItem,
             this.pasteToolStripMenuItem,
-            this.deleteToolStripMenuItem});
+            this.deleteToolStripMenuItem,
+            this.selectAllToolStripMenuItem});
             this.richTextBoxContextMenuStrip.Name = "contextMenuStrip1";
-            this.richTextBoxContextMenuStrip.Size = new System.Drawing.Size(130, 100);
+            this.richTextBoxContextMenuStrip.Size = new System.Drawing.Size(130, 124);
+            this.richTextBoxContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.RichTextBoxContextMenuStrip_Opening);
             // 
             // cutToolStripMenuItem
             // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.Size = new System.Drawing.Size(129, 24);
             this.cutToolStripMenuItem.Text = "剪切(&T)";
+            this.cutToolStripMenuItem.Click += new System.EventHandler(this.CutToolStripMenuItem_Click);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.Size = new System.Drawing.Size(129, 24);
             this.copyToolStripMenuItem.Text = "复制(&C)";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.Size = new System.Drawing.Size(129, 24);
             this.pasteToolStripMenuItem.Text = "粘贴(&P)";
+            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.PasteToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(129, 24);
             this.deleteToolStripMenuItem.Text = "删除(&D)";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(129, 24);
+            this.selectAllToolStripMenuItem.Text = "全选(&A)";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.SelectAllToolStripMenuItem_Click);
             // 
             // NotePadTabControl
             // 
@@ -163,5 +177,6 @@
         internal System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.ContextMenuStrip closeTabPageContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
     }
 }
