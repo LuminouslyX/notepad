@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace notepad
 {
@@ -20,6 +21,9 @@ namespace notepad
         public NotePadTabControl()
         {
             InitializeComponent();
+            richTextBoxTest.AllowDrop = true;
+            richTextBoxTest.DragDrop += new DragEventHandler(RichTextBox_DragDrop);
+            richTextBoxTest.DragEnter += new DragEventHandler(RichTextBox_DragEnter);
             richTextBoxTest.Focus();
             richTextBoxTest.SelectionStart = richTextBoxTest.Text.Length;
             WordWrap = true;
@@ -36,8 +40,11 @@ namespace notepad
         public void AddNewTabPage(string tabPageName, RichTextBox richTextBox)
         {
             richTextBox.AcceptsTab = true;
+            richTextBox.AllowDrop = true;
             richTextBox.ContextMenuStrip = richTextBoxContextMenuStrip;
             richTextBox.Dock = DockStyle.Fill;
+            richTextBox.DragDrop += new DragEventHandler(RichTextBox_DragDrop);
+            richTextBox.DragEnter += new DragEventHandler(RichTextBox_DragEnter);
             richTextBox.Font = Font;
             richTextBox.Location = new Point(3, 3);
             richTextBox.Name = "richTextBox";
@@ -162,7 +169,81 @@ namespace notepad
 
         private void RichTextBoxContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
-            
+            RichTextBox richTextBox = GetSelectedRichTextBox();
+            if (richTextBox == null || richTextBox.Focused == false || Clipboard.GetText() == string.Empty)
+            {
+                pasteToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                pasteToolStripMenuItem.Enabled = true;
+            }
+            if (richTextBox == null || richTextBox.SelectedText == string.Empty)
+            {
+                cutToolStripMenuItem.Enabled = false;
+                copyToolStripMenuItem.Enabled = false;
+                deleteToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                cutToolStripMenuItem.Enabled = true;
+                copyToolStripMenuItem.Enabled = true;
+                deleteToolStripMenuItem.Enabled = true;
+            }
+            if (richTextBox == null || richTextBox.Focused == false)
+            {
+                selectAllToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                selectAllToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void RichTextBox_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string file in files)
+            {
+                string fileType = Path.GetExtension(file);
+                if (fileType.Equals(".rtf"))
+                {
+                    RichTextBox richTextBox = GetSelectedRichTextBox();
+                    int separateIndex = richTextBox.SelectionStart;
+                    string contentOfLeft = richTextBox.Text.Substring(0, separateIndex);
+                    string contentOfRight = richTextBox.Text.Substring(separateIndex);
+                    richTextBox.LoadFile(file, RichTextBoxStreamType.RichText);
+                    string contentOfMiddle = richTextBox.Text;
+                    richTextBox.Text = contentOfLeft + contentOfMiddle + contentOfRight;
+                }
+                else if (fileType.Equals(".uni") || fileType.Equals(".txt")) 
+                {
+                    RichTextBox richTextBox = GetSelectedRichTextBox();
+                    FileStream fileSteam = new FileStream(file, FileMode.Open, FileAccess.Read);
+                    StreamReader streamReader = new StreamReader(fileSteam, Encoding.UTF8);
+                    int separateIndex = richTextBox.SelectionStart;
+                    string contentOfLeft = richTextBox.Text.Substring(0, separateIndex);
+                    string contentOfRight = richTextBox.Text.Substring(separateIndex);
+                    richTextBox.Clear();
+                    richTextBox.AppendText(contentOfLeft);
+                    richTextBox.AppendText(streamReader.ReadToEnd());
+                    richTextBox.AppendText(contentOfRight);
+                    streamReader.Close();
+                    fileSteam.Close();
+                }
+            }
+        }
+
+        private void RichTextBox_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Link;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
         }
     }
 }

@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
 namespace notepad
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        private FindForm findForm;
+        private ReplaceForm replaceForm;
+        internal bool FindFormShown { get; set; } = false;
+        internal bool ReplaceFormShown { get; set; } = false;
+        public MainForm()
         {
             InitializeComponent();
-            fileToolStripMenuItem.PerformClick();
-            editToolStripMenuItem.PerformClick();
         }
 
 
@@ -54,22 +57,23 @@ namespace notepad
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                string absolutePahtName = openFileDialog.FileName;
-                string fileType = absolutePahtName.Substring(absolutePahtName.LastIndexOf('.') + 1).ToLower();
-                FileStream fileSteam = new FileStream(absolutePahtName, FileMode.Open, FileAccess.Read);
-                StreamReader streamReader = new StreamReader(fileSteam, Encoding.UTF8);
+                string absolutePathName = openFileDialog.FileName;
+                string fileType = absolutePathName.Substring(absolutePathName.LastIndexOf('.') + 1).ToLower();
+                
                 RichTextBox richTextBox = new RichTextBox();
                 if (fileType.Equals("rtf"))
                 {
-                    richTextBox.LoadFile(absolutePahtName, RichTextBoxStreamType.RichText);
+                    richTextBox.LoadFile(absolutePathName, RichTextBoxStreamType.RichText);
                 }
-                else
+                else 
                 {
+                    FileStream fileSteam = new FileStream(absolutePathName, FileMode.Open, FileAccess.Read);
+                    StreamReader streamReader = new StreamReader(fileSteam, Encoding.UTF8);
                     richTextBox.Text = streamReader.ReadToEnd();
+                    streamReader.Close();
+                    fileSteam.Close();
                 }
-                streamReader.Close();
-                fileSteam.Close();
-                notePadTabControl.AddNewTabPage(absolutePahtName, richTextBox);
+                notePadTabControl.AddNewTabPage(absolutePathName, richTextBox);
             }
         }
 
@@ -200,6 +204,14 @@ namespace notepad
             {
                 selectAllToolStripMenuItem.Enabled = true;
             }
+            if (richTextBox == null || richTextBox.Focused == false)
+            {
+                dateToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                dateToolStripMenuItem.Enabled = true;
+            }
         }
 
         /// <summary>
@@ -258,6 +270,17 @@ namespace notepad
 
 
         /// <summary>
+        /// 点击工具栏下编辑项里的时间日期项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void DateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            notePadTabControl.GetSelectedRichTextBox()?.AppendText(DateTime.Now.ToString());
+        }
+
+
+        /// <summary>
         /// 点击工具栏下格式项里的换行项时产生的响应处理。
         /// </summary>
         /// <param name="sender">响应时间的源。</param>
@@ -303,6 +326,195 @@ namespace notepad
             {
                 notePadTabControl.SetBackGroundColor(colorDialog.Color);
             }
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下查看项里的查找项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void FindToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (FindFormShown)
+            {
+                findForm.Focus();
+            }
+            else
+            {
+                findForm = new FindForm(this);
+                findForm.Show();
+                FindFormShown = true;
+            }
+        }
+
+
+        /// <summary>
+        /// 点击工具栏下查看项里的替换项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void ReplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ReplaceFormShown)
+            {
+                replaceForm.Focus();
+            }
+            else
+            {
+                replaceForm = new ReplaceForm(this);
+                replaceForm.Show();
+                ReplaceFormShown = true;
+            }
+        }
+
+
+        /// <summary>
+        /// 以往下文查找的方式,在当前页里的富文本里寻找要查找的字符串,并用鼠标选择对应下标。
+        /// </summary>
+        /// <param name="value">要查找的字符串。</param>
+        /// <param name="isMatchCase">指明是否区分大小写。</param>
+        /// <param name="isRotated">指明是否循环。</param>
+        /// <returns>如果找得到字符串,返回true;否则返回false。</returns>
+        internal bool FindNextIndexOf(string value, bool isMatchCase, bool isRotated)
+        {
+            StringComparison stringComparison = 
+                isMatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+            RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
+            richTextBox.Focus();
+            int startIndex = richTextBox.SelectionStart + richTextBox.SelectionLength;
+            int indexOfValue;
+            try
+            {
+                indexOfValue = richTextBox.Text.IndexOf(value, startIndex, stringComparison);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                indexOfValue = -1;
+            }
+
+            if (indexOfValue != -1)
+            {
+                richTextBox.Select(indexOfValue, value.Length);
+                return true;
+            }
+            else if (isRotated)
+            {
+                startIndex = 0;
+                int count = richTextBox.SelectionStart + richTextBox.SelectionLength;
+                try
+                {
+                    indexOfValue = richTextBox.Text.IndexOf(value, startIndex, count, stringComparison);
+                }
+                catch(ArgumentOutOfRangeException)
+                {
+                    indexOfValue = -1;
+                }
+
+                if (indexOfValue != -1)
+                {
+                    richTextBox.Select(indexOfValue, value.Length);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// 以往上文查找的方式,在当前页里的富文本里寻找要查找的字符串,并用鼠标选择对应下标。
+        /// </summary>
+        /// <param name="value">要查找的字符串。</param>
+        /// <param name="isMatchCase">指明是否区分大小写。</param>
+        /// <param name="isRotated">指明是否循环。</param>
+        /// <returns>如果找得到字符串,返回true;否则返回false。</returns>
+        internal bool FindLastIndexOf(string value, bool isMatchCase, bool isRotated)
+        {
+            StringComparison stringComparison =
+                isMatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+            RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
+            richTextBox.Focus();
+
+            int count = richTextBox.SelectionStart;
+            int startIndex = count - 1;
+
+            int lastIndexOfValue;
+            try
+            {
+                lastIndexOfValue = richTextBox.Text.LastIndexOf(value, startIndex, count, stringComparison);
+            }
+            catch(ArgumentOutOfRangeException)
+            {
+                lastIndexOfValue = -1;
+            }
+
+            if (lastIndexOfValue != -1)
+            {
+                richTextBox.Select(lastIndexOfValue, value.Length);
+                return true;
+            }
+            else if (isRotated)
+            {
+                startIndex = richTextBox.Text.Length - 1;
+                count = richTextBox.Text.Length - richTextBox.SelectionStart;
+                try
+                {
+                    lastIndexOfValue = richTextBox.Text.IndexOf(value, startIndex, count, stringComparison);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    lastIndexOfValue = -1;
+                }
+                if (lastIndexOfValue != -1)
+                {
+                    richTextBox.Select(lastIndexOfValue, value.Length);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        
+        internal void ReplaceContent(string newValue)
+        {
+            RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
+            if (richTextBox.SelectionLength != 0)
+            {
+                notePadTabControl.GetSelectedRichTextBox().SelectedText = newValue;
+            }
+        }
+
+
+        internal void ReplaceAllContent(string newValue, bool isMatchCase)
+        {
+            while(FindLastIndexOf(newValue, isMatchCase, false))
+            {
+                ReplaceContent(newValue);
+            }
+        }
+
+        /// <summary>
+        /// 弹出信息框并报告错误。
+        /// </summary>
+        /// <param name="owner">该信息框的父窗体。</param>
+        /// <param name="errorMessage">错误信息。</param>
+        internal void ShowContentNotFoundMessage(Form owner, string errorMessage)
+        {
+            MessageBox.Show(owner, errorMessage, "notepad", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
