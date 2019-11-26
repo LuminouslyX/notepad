@@ -343,8 +343,8 @@ namespace notepad
             else
             {
                 findForm = new FindForm(this);
-                findForm.Show();
                 FindFormShown = true;
+                findForm.Show();
             }
         }
 
@@ -363,8 +363,8 @@ namespace notepad
             else
             {
                 replaceForm = new ReplaceForm(this);
-                replaceForm.Show();
                 ReplaceFormShown = true;
+                replaceForm.Show();
             }
         }
 
@@ -499,12 +499,30 @@ namespace notepad
         }
 
 
-        internal void ReplaceAllContent(string newValue, bool isMatchCase)
+        internal void ReplaceAllContent(string oldValue, string newValue, bool isMatchCase)
         {
-            while(FindLastIndexOf(newValue, isMatchCase, false))
+            RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
+            if (isMatchCase)
             {
-                ReplaceContent(newValue);
+                richTextBox.Text = richTextBox.Text.Replace(oldValue, newValue);
             }
+            else
+            {
+                StringComparison stringComparison = StringComparison.OrdinalIgnoreCase;
+                int startIndex = 0;
+                int indexOfOldValue = richTextBox.Text.IndexOf(oldValue, startIndex, stringComparison);
+                while (indexOfOldValue != -1)
+                {
+                    richTextBox.SelectionStart = indexOfOldValue;
+                    richTextBox.SelectionLength = oldValue.Length;
+                    richTextBox.SelectedText = newValue;
+                    startIndex = richTextBox.SelectionStart + richTextBox.SelectionLength;
+                    indexOfOldValue = richTextBox.Text.IndexOf(oldValue, startIndex, stringComparison);
+                }
+                richTextBox.SelectionStart = 0;
+                richTextBox.SelectionLength = 0;
+            }
+            richTextBox.Focus();
         }
 
         /// <summary>

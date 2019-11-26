@@ -53,7 +53,7 @@ namespace notepad
             {
                 isMatchCase = true;
             }
-            ((MainForm)Owner).ReplaceAllContent(replaceTextBox.Text, isMatchCase);
+            ((MainForm)Owner).ReplaceAllContent(contentTextBox.Text, replaceTextBox.Text, isMatchCase);
         }
 
 
