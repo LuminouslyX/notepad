@@ -370,6 +370,19 @@ namespace notepad
 
 
         /// <summary>
+        /// 点击工具栏下帮助项里的关于项时产生的响应处理。
+        /// </summary>
+        /// <param name="sender">响应时间的源。</param>
+        /// <param name="e">响应事件。</param>
+        private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm aboutForm = new AboutForm();
+            aboutForm.ShowDialog();
+            aboutForm.Close();
+        }
+
+
+        /// <summary>
         /// 以往下文查找的方式,在当前页里的富文本里寻找要查找的字符串,并用鼠标选择对应下标。
         /// </summary>
         /// <param name="value">要查找的字符串。</param>
@@ -489,6 +502,10 @@ namespace notepad
         }
 
         
+        /// <summary>
+        /// 将选中的文本替换成新字符串。
+        /// </summary>
+        /// <param name="newValue">替换后的新字符串。</param>
         internal void ReplaceContent(string newValue)
         {
             RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
@@ -499,6 +516,12 @@ namespace notepad
         }
 
 
+        /// <summary>
+        /// 将当前的文本框里对应要替换的字符串全部替换为新的字符串。
+        /// </summary>
+        /// <param name="oldValue">要被替换的字符串。</param>
+        /// <param name="newValue">替换后的字符串。</param>
+        /// <param name="isMatchCase">指明是否区分大小写。</param>
         internal void ReplaceAllContent(string oldValue, string newValue, bool isMatchCase)
         {
             RichTextBox richTextBox = notePadTabControl.GetSelectedRichTextBox();
@@ -524,6 +547,7 @@ namespace notepad
             }
             richTextBox.Focus();
         }
+
 
         /// <summary>
         /// 弹出信息框并报告错误。

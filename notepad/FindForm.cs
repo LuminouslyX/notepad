@@ -19,11 +19,12 @@ namespace notepad
             findNextButton.Enabled = false;
         }
 
-        private void CancelButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
 
+        /// <summary>
+        /// 点击"查找下一个"按钮时产生的事件处理。
+        /// </summary>
+        /// <param name="sender">事件的源。</param>
+        /// <param name="e">事件信息。</param>
         private void FindNextButton_Click(object sender, EventArgs e)
         {
             bool isMatchCase = false;
@@ -54,6 +55,23 @@ namespace notepad
             }
         }
 
+
+        /// <summary>
+        /// 点击"取消"按钮时产生的事件处理。
+        /// </summary>
+        /// <param name="sender">事件的源。</param>
+        /// <param name="e">事件信息。</param>
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+
+        /// <summary>
+        /// 当查找内容的文本框的内容发生改变时产生的事件处理。
+        /// </summary>
+        /// <param name="sender">事件的源。</param>
+        /// <param name="e">事件信息。</param>
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
             if (((TextBox)sender).Text == string.Empty)
@@ -62,6 +80,12 @@ namespace notepad
                 findNextButton.Enabled = true;
         }
 
+
+        /// <summary>
+        /// 关闭窗口时产生的事件处理。
+        /// </summary>
+        /// <param name="sender">事件的源。</param>
+        /// <param name="e">事件信息。</param>
         private void FindForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             ((MainForm)Owner).FindFormShown = false;
